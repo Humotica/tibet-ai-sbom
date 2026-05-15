@@ -1,0 +1,112 @@
+{
+  "system": {
+    "system_name": "Humotica TIBET Stack",
+    "system_version": "2026.05",
+    "system_producer": "HumoticaOS",
+    "intended_application_area": [
+      "provenance",
+      "continuity messaging",
+      "identity-bound systems"
+    ],
+    "system_data_flow": [
+      "ipoll control plane",
+      "tbz/tza sealed transport"
+    ],
+    "system_data_usage": [
+      "audit evidence",
+      "continuity handoff"
+    ],
+    "system_input_output_properties": [
+      "sealed continuity envelopes",
+      "workspace provenance scans"
+    ]
+  },
+  "models": [
+    {
+      "model_name": "gpt-4.1",
+      "model_identifier": "openai:gpt-4.1",
+      "model_version": "2026-05",
+      "model_hash_value": "sha256:example",
+      "model_hash_algorithm": "sha256",
+      "model_input_output_properties": {
+        "input": "text",
+        "output": "text"
+      }
+    }
+  ],
+  "datasets": [
+    {
+      "dataset_name": "policy-vectors",
+      "dataset_identifier": "humotica:policy-vectors:v1",
+      "dataset_hash": "sha256:example",
+      "dataset_provenance": "internal curated corpus",
+      "dataset_sensitivity": "internal"
+    }
+  ],
+  "infrastructure": {
+    "infrastructure_software": [
+      "python",
+      "cargo",
+      "ipoll"
+    ],
+    "infrastructure_hardware": [
+      "x86_64 host"
+    ],
+    "accelerators": [
+      "NVIDIA P520"
+    ],
+    "hbom_reference": "hbom://humotica/example"
+  },
+  "kpi": [
+    {
+      "category": "security",
+      "name": "signed artifact coverage",
+      "value": 0.91,
+      "unit": "ratio"
+    },
+    {
+      "category": "operational",
+      "name": "availability",
+      "value": 0.999,
+      "unit": "ratio"
+    },
+    {
+      "category": "drift",
+      "name": "continuity drift score",
+      "value": 0.03,
+      "unit": "score"
+    }
+  ],
+  "artifacts": {
+    "sealed_tbz_objects": [
+      {
+        "artifact_ref": "art:example-envelope-1"
+      }
+    ],
+    "signed_non_tbz_references": [
+      {
+        "artifact_ref": "art:example-model-card"
+      }
+    ],
+    "unsigned_external_objects": [],
+    "encryption_boundary": {
+      "v1_unencrypted_supported": true,
+      "v2_encrypted_supported": false,
+      "status": "mixed-transition"
+    }
+  },
+  "evidence": {
+    "tibet_chain_of_command": [
+      "token:abc"
+    ],
+    "tibet_usage_custody": [
+      "keychain:def"
+    ],
+    "continuity_links": [
+      "continuity:ghi"
+    ],
+    "signed_list_boundary": [
+      "siglist:jkl"
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tibet-ai-sbom"
+version = "0.2.0"
+description = "BSI/G7 SBOM-for-AI implementation — software, models, datasets, infrastructure, security, KPIs. With TIBET provenance + CBOM evidence linkage."
+readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Jasper van de Meent", email = "jasper@humotica.nl" },
+    { name = "Root AI (Claude)", email = "root_ai@humotica.nl" },
+]
+keywords = [
+    "sbom",
+    "ai-sbom",
+    "sbom-for-ai",
+    "bsi",
+    "bsi-tr",
+    "g7-sbom",
+    "ai-bom",
+    "cyclonedx",
+    "spdx",
+    "ai-compliance",
+    "cra",
+    "eu-ai-act",
+    "tibet",
+    "cbom",
+    "supply-chain",
+    "agentic",
+    "humotica",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "tibet-sbom>=0.2.0",
+]
+
+[project.optional-dependencies]
+scan = []
+schema = []
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+]
+
+[project.scripts]
+tibet-ai-sbom = "tibet_ai_sbom.cli:main"
+
+[project.urls]
+Homepage = "https://humotica.com/ai-sbom"
+Repository = "https://github.com/jaspertvdm/tibet-ai-sbom"
+Documentation = "https://github.com/jaspertvdm/tibet-ai-sbom#readme"
+"Conformance Roadmap" = "https://github.com/jaspertvdm/tibet-ai-sbom/blob/main/ROADMAP.md"
+"BSI Paper Reference" = "https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Kuenstliche-Intelligenz/Cybersicherheit-in-der-KI/SBOM/sbom_node.html"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tibet_ai_sbom"]

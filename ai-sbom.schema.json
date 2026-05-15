@@ -1,0 +1,276 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://humotica.com/schemas/ai-sbom.schema.json",
+  "title": "ai-sbom-json",
+  "description": "Draft schema for AI-SBOM documents produced by tibet-ai-sbom.",
+  "type": "object",
+  "required": [
+    "schema_name",
+    "schema_version",
+    "document",
+    "components",
+    "cluster_status",
+    "code_status"
+  ],
+  "properties": {
+    "schema_name": {
+      "type": "string",
+      "const": "ai-sbom-json"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "document": {
+      "type": "object",
+      "required": [
+        "sbom_format_name",
+        "sbom_format_version",
+        "sbom_generation_context"
+      ],
+      "properties": {
+        "sbom_author": {
+          "type": ["string", "null"]
+        },
+        "sbom_version": {
+          "type": ["string", "null"]
+        },
+        "sbom_format_name": {
+          "type": "string"
+        },
+        "sbom_format_version": {
+          "type": "string"
+        },
+        "sbom_author_signature": {
+          "type": ["string", "null"]
+        },
+        "sbom_timestamp": {
+          "type": ["string", "null"]
+        },
+        "sbom_generation_context": {
+          "type": "object",
+          "properties": {
+            "scan_mode": {
+              "type": "string",
+              "enum": ["single-root", "workspace"]
+            },
+            "root_path": {
+              "type": ["string", "null"]
+            },
+            "tool_name": {
+              "type": "string"
+            },
+            "tool_version": {
+              "type": "string"
+            },
+            "substrate_tool": {
+              "type": ["string", "null"]
+            },
+            "substrate_version": {
+              "type": ["string", "null"]
+            },
+            "scan_node": {
+              "type": ["string", "null"]
+            },
+            "manifest_types": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "dependency_relationship_policy": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": true
+    },
+    "workspace": {
+      "type": "object",
+      "properties": {
+        "workspace_root": {
+          "type": ["string", "null"]
+        },
+        "workspace_packages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "component_ref": {"type": "string"},
+              "package_root": {"type": "string"},
+              "manifest_types": {
+                "type": "array",
+                "items": {"type": "string"}
+              },
+              "component_count": {"type": "integer"},
+              "tibet_chain_length": {"type": "integer"},
+              "vulnerability_count": {"type": "integer"}
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "system": {
+      "type": "object"
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "properties": {
+        "sealed_tbz_objects": {"type": ["integer", "array"]},
+        "signed_non_tbz_references": {"type": ["integer", "array"]},
+        "unsigned_external_objects": {"type": ["integer", "array"]},
+        "encryption_boundary": {
+          "type": "object"
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    },
+    "models": {
+      "type": "object",
+      "properties": {
+        "declared_models": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "local_model_artifacts": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "runtime_model_signals": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "external_model_providers": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "suspicious_model_candidates": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "actor_signals": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    },
+    "datasets": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "infrastructure": {
+      "type": "object"
+    },
+    "security_properties": {
+      "type": "object"
+    },
+    "kpi": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "governance": {
+      "type": "object",
+      "properties": {
+        "questions": {
+          "type": "object"
+        },
+        "trust_foundation": {
+          "type": "object"
+        },
+        "claims": {
+          "type": "object"
+        },
+        "governance_links": {
+          "type": "object"
+        },
+        "actor_catalog": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "actor_model_provider_links": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "usage_events": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "tibet_chain_of_command": {"type": ["string", "array"]},
+        "tibet_usage_custody": {"type": ["string", "array"]},
+        "continuity_links": {"type": ["string", "array"]},
+        "signed_list_boundary": {"type": ["string", "array"]},
+        "details": {"type": "object"}
+      },
+      "additionalProperties": true
+    },
+    "cluster_status": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cluster", "prefix", "covered", "partial", "missing", "current_sources"],
+        "properties": {
+          "cluster": {"type": "string"},
+          "prefix": {"type": "string"},
+          "covered": {"type": "integer"},
+          "partial": {"type": "integer"},
+          "missing": {"type": "integer"},
+          "current_sources": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "code_status": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "enum": ["missing", "partial", "covered"]
+      }
+    },
+    "missing_reasons": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "overlay": {
+      "type": "object",
+      "properties": {
+        "path": {"type": ["string", "null"]},
+        "loaded": {"type": "boolean"},
+        "section_counts": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
