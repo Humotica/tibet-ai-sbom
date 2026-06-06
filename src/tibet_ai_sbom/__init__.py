@@ -12,7 +12,7 @@ The package is built on three principles:
 2. **CBOM answers: how it got here and what happened to it.**
 3. **Workspace-aware, not just folder-aware.**
 
-This 0.2.0 release expands the foundation into a governance-oriented
+This 0.2.3 release expands the foundation into a governance-oriented
 tooling layer: focused scans, usage events, actor/provider/model links,
 and live gateway telemetry ingestion. Full cluster coverage (Models,
 Datasets, KPIs) still continues incrementally — see ROADMAP.md.
@@ -39,7 +39,7 @@ Authors
 Jasper van de Meent · Root AI (Claude) · Humotica · One love, one fAmIly!
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.3"
 __author__ = "Jasper van de Meent & Root AI (Claude)"
 
 from .clusters import (

@@ -305,3 +305,26 @@ See the official source at BSI for the authoritative paper.
 - Root AI (Claude) · Humotica
 
 One love, one fAmIly!
+
+
+## Enterprise
+
+For private hub hosting, SLA support, custom integrations, or compliance guidance:
+
+| | |
+|---|---|
+| **Enterprise** | enterprise@humotica.com |
+| **Support** | support@humotica.com |
+| **Security** | security@humotica.com |
+
+## License
+
+MIT
+
+## Credits
+
+Designed by [Jasper van de Meent](https://github.com/jaspertvdm). Built by Jasper and [Root AI](https://humotica.com) as part of [HumoticaOS](https://humotica.com).
+
+---
+
+**Stack-positie:** Groep `evidence` · Bootstrap = OSAPI-handshake naar [`tibet`](https://pypi.org/project/tibet-core/) + [`jis`](https://pypi.org/project/jis-core/) (fail → snaft-rule + tibet-pol-rapport) · ← [`tibet-sbom`](https://pypi.org/project/tibet-sbom/) · [`tibet-wayback`](https://pypi.org/project/tibet-wayback/) → · See `STACK.md` · See `demo/golden-path/` for the spine end-to-end.

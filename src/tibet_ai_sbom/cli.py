@@ -2228,6 +2228,14 @@ def _load_gateway_usage_events(scan_path: Path, limit: int = 200) -> list[dict[s
                     "transport": record.get("transport") or "https-proxy",
                     "overlay_hops": record.get("overlay_hops") or [],
                     "egress_host": target_url,
+                    "lane_class": record.get("lane_class"),
+                    "lane_collision_policy": record.get("lane_collision_policy"),
+                    "coffee_lane_policy": record.get("coffee_lane_policy"),
+                    "coffee_reason": record.get("coffee_reason"),
+                    "time_diff_seconds": record.get("time_diff_seconds"),
+                    "diff_threshold_seconds": record.get("diff_threshold_seconds"),
+                    "preemptible": record.get("preemptible"),
+                    "lane_priority": record.get("lane_priority"),
                 },
                 "trust": {
                     "basis": "jis+tibet-gateway" if record.get("token_id") or record.get("envelope_id") else "gateway-observed",
@@ -2247,6 +2255,7 @@ def _load_gateway_usage_events(scan_path: Path, limit: int = 200) -> list[dict[s
                     "target_url": target_url,
                     "intent": record.get("intent"),
                     "method": record.get("method"),
+                    "emitter": record.get("_emitter"),
                 },
             })
     return events[:limit]
@@ -2376,6 +2385,15 @@ def _augment_actor_links_from_usage_events(
             **item,
             "linked_providers": list(item.get("linked_providers", [])),
             "linked_models": list(item.get("linked_models", [])),
+            "lane_class": item.get("lane_class"),
+            "lane_collision_policy": item.get("lane_collision_policy"),
+            "coffee_lane_policy": item.get("coffee_lane_policy"),
+            "coffee_reason": item.get("coffee_reason"),
+            "time_diff_seconds": item.get("time_diff_seconds"),
+            "diff_threshold_seconds": item.get("diff_threshold_seconds"),
+            "preemptible": item.get("preemptible"),
+            "lane_priority": item.get("lane_priority"),
+            "emitter": item.get("emitter"),
         }
 
     for event in usage_events:
@@ -2383,7 +2401,9 @@ def _augment_actor_links_from_usage_events(
             continue
         actor = event.get("actor")
         inference = event.get("inference")
+        route = event.get("route")
         trust = event.get("trust")
+        evidence = event.get("evidence")
         if not isinstance(actor, dict) or not isinstance(inference, dict):
             continue
         identity = str(actor.get("identity") or actor.get("ains_domain") or "").strip()
@@ -2396,6 +2416,15 @@ def _augment_actor_links_from_usage_events(
             "linked_providers": [],
             "linked_models": [],
             "trust_basis": trust.get("basis") if isinstance(trust, dict) else "observed",
+            "lane_class": route.get("lane_class") if isinstance(route, dict) else None,
+            "lane_collision_policy": route.get("lane_collision_policy") if isinstance(route, dict) else None,
+            "coffee_lane_policy": route.get("coffee_lane_policy") if isinstance(route, dict) else None,
+            "coffee_reason": route.get("coffee_reason") if isinstance(route, dict) else None,
+            "time_diff_seconds": route.get("time_diff_seconds") if isinstance(route, dict) else None,
+            "diff_threshold_seconds": route.get("diff_threshold_seconds") if isinstance(route, dict) else None,
+            "preemptible": route.get("preemptible") if isinstance(route, dict) else None,
+            "lane_priority": route.get("lane_priority") if isinstance(route, dict) else None,
+            "emitter": evidence.get("emitter") if isinstance(evidence, dict) else None,
         })
         provider = inference.get("provider")
         model = inference.get("model")
@@ -2408,11 +2437,49 @@ def _augment_actor_links_from_usage_events(
             link["action_surface"] = event_surface
         if isinstance(trust, dict) and trust.get("basis"):
             link["trust_basis"] = trust["basis"]
+        if isinstance(route, dict):
+            current_rank = _coffee_policy_rank(link.get("coffee_lane_policy"))
+            route_rank = _coffee_policy_rank(route.get("coffee_lane_policy"))
+            should_upgrade_policy = route_rank >= current_rank
+            if route.get("lane_class") and (should_upgrade_policy or not link.get("lane_class")):
+                link["lane_class"] = route["lane_class"]
+            if route.get("lane_collision_policy") and (should_upgrade_policy or not link.get("lane_collision_policy")):
+                link["lane_collision_policy"] = route["lane_collision_policy"]
+            if route.get("coffee_lane_policy") and (should_upgrade_policy or not link.get("coffee_lane_policy")):
+                link["coffee_lane_policy"] = route["coffee_lane_policy"]
+            if route.get("coffee_reason") and (should_upgrade_policy or not link.get("coffee_reason")):
+                link["coffee_reason"] = route["coffee_reason"]
+            if route.get("time_diff_seconds") is not None and (should_upgrade_policy or link.get("time_diff_seconds") is None):
+                link["time_diff_seconds"] = route["time_diff_seconds"]
+            if route.get("diff_threshold_seconds") is not None and (should_upgrade_policy or link.get("diff_threshold_seconds") is None):
+                link["diff_threshold_seconds"] = route["diff_threshold_seconds"]
+            if route.get("preemptible") is not None:
+                link["preemptible"] = route["preemptible"]
+            if route.get("lane_priority") is not None:
+                link["lane_priority"] = route["lane_priority"]
+        if isinstance(evidence, dict) and evidence.get("emitter"):
+            link["emitter"] = evidence["emitter"]
 
     for item in merged.values():
         item["linked_providers"] = sorted(set(item.get("linked_providers", [])))
         item["linked_models"] = sorted(set(item.get("linked_models", [])))
     return sorted(merged.values(), key=lambda item: str(item.get("actor_identity", "")))[:250]
+
+
+def _coffee_policy_rank(value: Any) -> int:
+    """Rank coffee policies so actor-link summaries keep the strongest semantics."""
+    ranking = {
+        "hard_avoid": 7,
+        "offline_fallback": 6,
+        "rebuild": 5,
+        "fork_on_hop_off": 4,
+        "freeze_resume": 3,
+        "polite_avoid": 2,
+        "sip_anyway": 1,
+    }
+    if not isinstance(value, str):
+        return 0
+    return ranking.get(value, 0)
 
 
 def _manifest_types_for_path(path: Path) -> list[str]:
@@ -2796,7 +2863,7 @@ def _build_ai_sbom_document(summary: dict[str, Any]) -> dict[str, Any]:
 
 def _cmd_version(_args) -> int:
     print(f"tibet-ai-sbom {__version__}")
-    print("BSI/G7 SBOM-for-AI implementation — honest 0.1.0 foundation.")
+    print("BSI/G7 SBOM-for-AI implementation — governance-oriented AI inventory.")
     return 0
 
 
@@ -3041,7 +3108,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="tibet-ai-sbom",
         description=(
-            "BSI/G7 SBOM-for-AI implementation (alpha 0.1.0). "
+            "BSI/G7 SBOM-for-AI implementation. "
             "See README.md and ROADMAP.md for the conformance plan."
         ),
     )
@@ -3166,7 +3233,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd is None:
         parser.print_help()
         return 0
-    return handlers[args.cmd](args)
+    try:
+        return handlers[args.cmd](args)
+    except BrokenPipeError:
+        return 0
 
 
 if __name__ == "__main__":

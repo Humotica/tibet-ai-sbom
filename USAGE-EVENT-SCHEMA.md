@@ -168,7 +168,15 @@ Every observation record should be mappable into this shape:
     "route_class": "direct",
     "transport": "https",
     "overlay_hops": [],
-    "egress_host": "api.openai.com"
+    "egress_host": "api.openai.com",
+    "lane_class": "agent-high",
+    "lane_collision_policy": "graceful_yield",
+    "coffee_lane_policy": "fork_on_hop_off",
+    "coffee_reason": "time_diff_seconds=300<3600",
+    "time_diff_seconds": 300.0,
+    "diff_threshold_seconds": 3600,
+    "preemptible": true,
+    "lane_priority": 7
   },
 
   "trust": {
@@ -187,7 +195,8 @@ Every observation record should be mappable into this shape:
 
   "evidence": {
     "source": "/var/log/tibet/gateway.jsonl",
-    "raw_ref": "line:12345"
+    "raw_ref": "line:12345",
+    "emitter": "cap-bus-runtime"
   }
 }
 ```
@@ -219,6 +228,13 @@ Nice to have:
 - `status_code`
 - `token_counts`
 - `payload_hash`
+- `route.lane_class`
+- `route.lane_collision_policy`
+- `route.coffee_lane_policy`
+- `route.coffee_reason`
+- `route.time_diff_seconds`
+- `route.diff_threshold_seconds`
+- `evidence.emitter`
 
 ### Overlay Event
 
